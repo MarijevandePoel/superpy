@@ -1,5 +1,5 @@
 import csv
-from datetime import datetime
+from datetime import datetime, date
 import pandas as pd
 import sys
 
@@ -27,9 +27,9 @@ class Product:
         self.expiration = expiration
         self.quantity = quantity
         self.sold_id = None
-        self.sell_date = None
-        self.sell_price = None
-        self.sell_quantity = None
+        self.sell_date = date.today()
+        self.sell_price = 0
+        self.sell_quantity = 0
 
 
 class Stock:
@@ -97,13 +97,9 @@ class Stock:
         for product in self.products:
             if (
                 product.buy_date <= inventory_date
-                and (
-                    product.sold_id is not None
-                    or product.sell_date > inventory_date
-                    or product.quantity <= product.sell_quantity
-                )
+                and (product.sold_id is not None or product.sell_date > inventory_date)
                 and product.expiration >= inventory_date
-                and product.quantity >= product.sell_quantity
+                and product.sell_quantity >= product.quantity
             ):
                 inventory.append(
                     [
@@ -129,7 +125,7 @@ class Stock:
             df.columns = headers
         else:
             print(
-                "please use show show product, there are no items of this product sold sold yet"
+                "please use show product, there are no items of this product sold yet"
             )
             sys.exit()
 
@@ -157,7 +153,7 @@ class Stock:
 
     def get_revenue_year(self, report_date):
         sell_prices = [
-            product.sell_price * product.sell_quantity
+            product.sell_price
             for product in self.products
             if not product.sell_date is None
             and product.sell_date.year == report_date.year

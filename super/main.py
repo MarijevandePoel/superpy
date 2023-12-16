@@ -54,6 +54,8 @@ if args.command == "show-inventory":
             showindex=False,
         )
     )
+    if stock.sold_id is None:
+        print(f"Product not sold yest please use show-product")
 
     if args.to_csv:
         filename = f"Inventory on {args.date}.csv"
@@ -75,7 +77,7 @@ if args.command == "show-product":
         f"Product bought on: {product.buy_date}\n",
         f"Product bought for: ${product.buy_price}\n",
         f"Product expires on: {product.expiration}\n",
-        f"Product quantity: {product.quantity}"
+        f"Product quantity: {product.quantity}",
     )
     if product.sold_id is not None:
         print(
@@ -108,7 +110,7 @@ if args.command == "report-total":
             print(
                 """Set reporting period with --day, --month or --year,
                 then enter date in format (YYYY-MM-DD),(YYYY-MM) or (YYYY)"""
-                )
+            )
 
         if args.type_of_report == "profit":
             if args.day:
@@ -146,9 +148,7 @@ if args.command == "report-period":
         df.columns = ["Day", "Revenue", "Profit"]
     elif args.type_of_report == "product-sales":
         if args.product is not None:
-            df = get_report(args.report_month,
-                            stock.get_product_sales,
-                            args.product)
+            df = get_report(args.report_month, stock.get_product_sales, args.product)
             df.columns = ["Day", f"Number of {args.product}s sold"]
         else:
             print(
